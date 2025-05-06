@@ -12,6 +12,6 @@ return {
   },
   config = function()
     vim.keymap.set("n", "<leader>l", ":Neotree toggle right<CR>")
-    vim.keymap.set("n", "<leader>p", ":Neotree toggle float<CR>")
+    vim.keymap.set("n", "<leader>n", ":Neotree toggle float<CR>")
   end,
 }

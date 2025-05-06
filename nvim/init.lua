@@ -2,7 +2,8 @@ vim.cmd("set expandtab")
 vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
-vim.cmd("set number")
+
+vim.cmd("set fillchars=eob:`")
 
 vim.api.nvim_set_keymap("i", "<C-h>", "<Left>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<C-j>", "<Down>", { noremap = true, silent = true })
@@ -42,7 +43,7 @@ require("lazy").setup({
 	spec = "plugins",
 	-- Configure any other settings here. See the documentation for more details.
 	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "tokyonight" } },
+	install = { colorscheme = { "black-metal-theme-neovim" } },
 	-- automatically check for plugin updates
 	ui = {
 		-- These are the default options
@@ -55,7 +56,7 @@ require("lazy").setup({
 -- THEMES AVAILABLE:
 -- vesper, catppuccin, moonfly
 
-vim.cmd.colorscheme("tokyonight")
+vim.cmd.colorscheme("gorgoroth")
 
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
@@ -69,3 +70,23 @@ vim.o.cmdheight = 1
 vim.o.laststatus = 3
 vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "NONE", ctermbg = "NONE" })
 vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "NONE", ctermbg = "NONE" })
+vim.keymap.set({ "i", "x", "n", "s" }, "<D-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+
+
+vim.api.nvim_create_augroup("alpha_on_empty", { clear = true })
+vim.api.nvim_create_autocmd("User", {
+	pattern = "BDeletePre *",
+	group = "alpha_on_empty",
+	callback = function()
+		local bufnr = vim.api.nvim_get_current_buf()
+		local name = vim.api.nvim_buf_get_name(bufnr)
+
+		if name == "" then
+      vim.cmd([[:Alpha | bd#]])
+		end
+	end,
+})
+
+vim.cmd("set number")
+
+
