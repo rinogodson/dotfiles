@@ -119,10 +119,6 @@ cpp() {
     g++ -o "$1" "$1.cpp" && ./"$1"
 }
 
-
-
-
-
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
