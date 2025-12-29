@@ -1,3 +1,21 @@
+. "$HOME/.cargo/env"
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -73,13 +91,15 @@ ZSH_THEME="powerlevel10k/powerlevel10k" # set by `omz`
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+export FZF_BASE=/path/to/fzf/install/dir
+export FZF_DEFAULT_COMMAND='rg'
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-autosuggestions git web-search themes fzf)
+plugins=(zsh-autosuggestions git web-search themes fzf fzf-tab fast-syntax-highlighting zsh-vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -114,10 +134,24 @@ source $ZSH/oh-my-zsh.sh
 
 alias mkcd="mkdir $1; cd $1"
 alias mp="multipass"
+alias love="/Applications/love.app/Contents/MacOS/love"
 
 cpp() {
     g++ -o "$1" "$1.cpp" && ./"$1"
 }
+
+
+
+cpp() {
+    clang++ "$1.cpp" -o "$1" && ./"$1"
+}
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/rinogodson/.lmstudio/bin"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+
+
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -131,6 +165,7 @@ function y() {
 export EDITOR=nvim
 
 # Created by `pipx` on 2025-03-18 05:26:42
+export PATH="$PATH:/Users/rinogodson/.local/bin"
 alias vim=nvim
 alias v=nvim
 alias n=nvim
@@ -165,10 +200,6 @@ alias cl="clear"
 alias c="clear"
 alias ls="lsd -X"
 
-if [ -z "$TMUX" ] && [ "$TERM" = "xterm-ghostty" ]; then
-  tmux attach || exec tmux new-session && exit;
-fi
-
 export TERM="xterm-256color"
 
 alias DreamMake="~/DreamJournals/make.sh"
@@ -178,5 +209,22 @@ alias most="history | awk '{print $2}' | sort | uniq -c | sort -nr | head -10"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export PATH=$PATH:$HOME/go/bin
+. "/Users/rinogodson/.deno/env"
+eval $(thefuck --alias)
+eval "$(zoxide init zsh)"
+alias cd="z"
 alias lg="lazygit"
-alias t="task"
+alias t="tmux"
+alias s="open -a Slack"
+
+# bun completions
+[ -s "/Users/rinogodson/.bun/_bun" ] && source "/Users/rinogodson/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# git
+alias gp="git push"
+alias gc="git commit"
+alias ga="git add"

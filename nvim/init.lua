@@ -1,92 +1,116 @@
+require("config.lazy")
+require("config.lsp")
+require("keymaps")
+require("ai")
+
 vim.cmd("set expandtab")
+vim.cmd("set nowrap")
 vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
-
 vim.cmd("set fillchars=eob:`")
-
-vim.api.nvim_set_keymap("i", "<C-h>", "<Left>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("i", "<C-j>", "<Down>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("i", "<C-k>", "<Up>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("i", "<C-l>", "<Right>", { noremap = true, silent = true })
-
 vim.cmd("set smartindent")
 vim.cmd("set autoindent")
 vim.cmd("set formatoptions+=r")
 
-vim.g.mapleader = " "
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		vim.api.nvim_echo({
-			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
-			{ "\nPress any key to exit..." },
-		}, true, {})
-		vim.fn.getchar()
-		os.exit(1)
-	end
-end
-vim.opt.rtp:prepend(lazypath)
-
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
-
--- Setup lazy.nvim
-require("lazy").setup({
-	spec = "plugins",
-	-- Configure any other settings here. See the documentation for more details.
-	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "black-metal-theme-neovim" } },
-	-- automatically check for plugin updates
-	ui = {
-		-- These are the default options
-		checker = {
-			enabled = true, -- For enable or disable the checker.
-			notify = false, -- For disable notifications.
-		},
-	},
-})
--- THEMES AVAILABLE:
--- vesper, catppuccin, moonfly
-
-vim.cmd.colorscheme("gorgoroth")
-
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "none" })
-
-vim.cmd("nnoremap('<C-d>', '<C-d>zz')")
-vim.cmd("nnoremap('<C-u>', '<C-u>zz')")
 vim.opt.ignorecase = true
 vim.o.cmdheight = 1
 vim.o.laststatus = 3
-vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "NONE", ctermbg = "NONE" })
-vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "NONE", ctermbg = "NONE" })
-vim.keymap.set({ "i", "x", "n", "s" }, "<D-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+vim.cmd("set number")
+vim.cmd("set relativenumber")
+vim.cmd("colorscheme kanso")
 
+vim.opt.ignorecase = true
+vim.opt.winborder = "rounded"
+vim.opt.cursorline = true
+vim.opt.wrap = false
 
-vim.api.nvim_create_augroup("alpha_on_empty", { clear = true })
-vim.api.nvim_create_autocmd("User", {
-	pattern = "BDeletePre *",
-	group = "alpha_on_empty",
-	callback = function()
-		local bufnr = vim.api.nvim_get_current_buf()
-		local name = vim.api.nvim_buf_get_name(bufnr)
-
-		if name == "" then
-      vim.cmd([[:Alpha | bd#]])
-		end
-	end,
+-- highlight yank
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+  pattern = "*",
+  desc = "highlight on yank",
+  callback = function()
+    vim.highlight.on_yank({ timeout = 100, visual = true })
+  end,
 })
 
-vim.cmd("set number")
+-- restore cursor to file position in previous editing session
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function(args)
+    local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+    local line_count = vim.api.nvim_buf_line_count(args.buf)
+    if mark[1] > 0 and mark[1] <= line_count then
+      vim.api.nvim_win_set_cursor(0, mark)
+      -- defer centering slightly so it's applied after render
+      vim.schedule(function()
+        vim.cmd("normal! zz")
+      end)
+    end
+  end,
+})
 
+-- no auto continue comments on new line
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("no_auto_comment", {}),
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
 
+-- syntax highlighting for dotenv files
+vim.api.nvim_create_autocmd("BufRead", {
+  group = vim.api.nvim_create_augroup("dotenv_ft", { clear = true }),
+  pattern = { ".env", ".env.*" },
+  callback = function()
+    vim.bo.filetype = "dosini"
+  end,
+})
+
+-- show cursorline only in active window enable
+vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
+  group = vim.api.nvim_create_augroup("active_cursorline", { clear = true }),
+  callback = function()
+    vim.opt_local.cursorline = true
+  end,
+})
+
+-- show cursorline only in active window disable
+vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
+  group = "active_cursorline",
+  callback = function()
+    vim.opt_local.cursorline = false
+  end,
+})
+
+-- ide like highlight when stopping cursor
+vim.api.nvim_create_autocmd("CursorMoved", {
+  group = vim.api.nvim_create_augroup("LspReferenceHighlight", { clear = true }),
+  desc = "Highlight references under cursor",
+  callback = function()
+    -- Only run if the cursor is not in insert mode
+    if vim.fn.mode() ~= "i" then
+      local clients = vim.lsp.get_clients({ bufnr = 0 })
+      local supports_highlight = false
+      for _, client in ipairs(clients) do
+        if client.server_capabilities.documentHighlightProvider then
+          supports_highlight = true
+          break -- Found a supporting client, no need to check others
+        end
+      end
+      if supports_highlight then
+        vim.lsp.buf.clear_references()
+        vim.lsp.buf.document_highlight()
+      end
+    end
+  end,
+})
+
+-- ide like highlight when stopping cursor
+vim.api.nvim_create_autocmd("CursorMovedI", {
+  group = "LspReferenceHighlight",
+  desc = "Clear highlights when entering insert mode",
+  callback = function()
+    vim.lsp.buf.clear_references()
+  end,
+})

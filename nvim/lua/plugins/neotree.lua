@@ -5,13 +5,11 @@ return {
   lazy = false,
   opts = {},
   window = {
-    -- ... other window options ...
-    popup = {
-      background = "#00000000",
-    },
+    position = "float",
   },
   config = function()
-    vim.keymap.set("n", "<leader>l", ":Neotree toggle right<CR>")
-    vim.keymap.set("n", "<leader>n", ":Neotree toggle float<CR>")
+    require("neo-tree").setup({
+      popup_border_style = "rounded",
+    })
   end,
 }
