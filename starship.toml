@@ -1,0 +1,29 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = '''
+[](bold #75797F)$directory$rust$package$git_branch$git_status
+[❯](bold green) '''
+
+add_newline = false
+
+[character] 
+success_symbol = '[❯](bold green)' 
+
+[package]
+disabled = true
+
+[directory]
+truncate_to_repo = false
+truncation_length = 0
+style = "#75797F"
+
+[git_branch]
+format = "[$symbol$branch ]($style)"
+symbol = ""
+style = "#75797F"
+
+[git_status]
+format = "[($all_status$ahead_behind)]($style)"
+modified = "+${count}"
+style = "#75797F"
+
