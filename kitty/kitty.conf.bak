@@ -1,0 +1,48 @@
+launch ~/cool.sh
+font_size       22.0
+hide-cursor -1
+window_padding_width    2
+window_margin_width     0
+
+hide_window_decorations true
+text_composition_strategy legacy
+# cursor_trail 1
+modify_font cell_width 95%
+single_window_margin_width 0
+enabled_layouts Tall, *
+macos_option_as_alt yes
+map f1 new_window_with_cwd
+map f2 launch --cwd=current $EDITOR .
+tab_bar_style       powerline
+tab_powerline_style slanted
+tab_bar_position top
+window_border_width     1pt
+# background_opacity 0.97
+# background_blur 100
+# active_border_color     #44ffff
+dynamic_background_opacity yes
+map ctrl+. set_background_opacity +0.1
+map ctrl+, set_background_opacity -0.1
+
+include kanso_zen.conf
+
+
+# font_family      family="IosevkaTermSlab Nerd Font Mono"
+# bold_font        auto
+# italic_font      auto
+# bold_italic_font auto
+
+# BEGIN_KITTY_FONTS
+# font_family      family="GeistMono Nerd Font Mono"
+# bold_font        auto
+# italic_font      auto
+# bold_italic_font auto
+# END_KITTY_FONT
+
+
+# BEGIN_KITTY_FONTS
+font_family      family='SF Mono' style=Medium
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+# END_KITTY_FONTS
